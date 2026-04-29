@@ -1,0 +1,146 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Fast, global content delivery powered by Cloudflare Workers." />
+    <title>CDN</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+    <style>
+      *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+      :root {
+        --bg:       #080c12;
+        --surface:  #0d1117;
+        --border:   #1e2936;
+        --accent:   #3b82f6;
+        --accent-2: #8b5cf6;
+        --green:    #22c55e;
+        --text:     #e2e8f0;
+        --muted:    #64748b;
+        --glow:     rgba(59,130,246,.15);
+      }
+
+      body {
+        font-family: 'Inter', system-ui, sans-serif;
+        background: var(--bg);
+        color: var(--text);
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 1.75rem;
+        padding: 2rem 1rem;
+        background-image:
+          radial-gradient(ellipse 80% 50% at 50% -5%,  rgba(59,130,246,.10) 0%, transparent 70%),
+          radial-gradient(ellipse 40% 30% at 90% 70%,  rgba(139,92,246,.07) 0%, transparent 60%);
+      }
+
+      /* ── Logo / wordmark ── */
+      .wordmark {
+        font-family: 'JetBrains Mono', monospace;
+        font-size: clamp(1.1rem, 3vw, 1.4rem);
+        font-weight: 500;
+        color: var(--muted);
+        letter-spacing: .08em;
+        text-transform: uppercase;
+        animation: fadeUp .5s ease both;
+      }
+
+      /* ── Domain ── */
+      .domain {
+        font-family: 'JetBrains Mono', monospace;
+        font-size: clamp(2rem, 6vw, 3.25rem);
+        font-weight: 700;
+        letter-spacing: -.03em;
+        background: linear-gradient(135deg, #60a5fa 0%, #a78bfa 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        animation: fadeUp .5s .08s ease both;
+      }
+
+      /* ── Status ── */
+      .status-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: .45rem;
+        background: rgba(34,197,94,.07);
+        border: 1px solid rgba(34,197,94,.18);
+        color: var(--green);
+        font-size: .8rem;
+        font-weight: 600;
+        padding: .35rem 1rem;
+        border-radius: 999px;
+        letter-spacing: .04em;
+        animation: fadeUp .5s .16s ease both;
+      }
+
+      .status-dot {
+        width: 7px; height: 7px;
+        border-radius: 50%;
+        background: var(--green);
+        animation: pulse 2.2s ease-in-out infinite;
+      }
+
+      /* ── Divider ── */
+      .divider {
+        width: 40px;
+        height: 1px;
+        background: var(--border);
+        animation: fadeUp .5s .24s ease both;
+      }
+
+      /* ── Footer ── */
+      footer {
+        font-size: .78rem;
+        color: var(--muted);
+        letter-spacing: .02em;
+        animation: fadeUp .5s .32s ease both;
+      }
+
+      footer a {
+        color: #60a5fa;
+        text-decoration: none;
+      }
+
+      footer a:hover { text-decoration: underline; }
+
+      /* ── Animations ── */
+      @keyframes fadeUp {
+        from { opacity: 0; transform: translateY(16px); }
+        to   { opacity: 1; transform: translateY(0); }
+      }
+
+      @keyframes pulse {
+        0%, 100% { opacity: 1; }
+        50%       { opacity: .25; }
+      }
+    </style>
+  </head>
+  <body>
+
+    <div class="wordmark">Content Delivery Network</div>
+
+    <div class="domain" id="domain">—</div>
+
+    <div class="status-pill">
+      <span class="status-dot"></span>
+      Operational
+    </div>
+
+    <div class="divider"></div>
+
+    <footer>
+      Powered by <a href="https://workers.cloudflare.com" target="_blank" rel="noopener">Cloudflare Workers</a>
+    </footer>
+
+    <script>
+      document.getElementById('domain').textContent = window.location.hostname;
+    </script>
+
+  </body>
+</html>

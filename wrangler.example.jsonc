@@ -1,0 +1,36 @@
+{
+	"$schema": "node_modules/wrangler/config-schema.json",
+	"name": "cdn-serverless",
+	"main": "src/index.ts",
+	"compatibility_date": "2026-04-29",
+	"compatibility_flags": [
+		"nodejs_compat",
+		"global_fetch_strictly_public"
+	],
+	"assets": {
+		"directory": "./public"
+	},
+	"observability": {
+		"enabled": true
+	},
+	"vars": {
+		"ROUTES_JSON": "{}",
+		"CACHE_TTL": "7200"
+	},
+	"routes": [
+		{
+			"pattern": "YOUR_DOMAIN.com",
+			"custom_domain": true
+		}
+	],
+	"ratelimits": [
+		{
+			"name": "RATELIMITER_NAME",
+			"namespace_id": "PASTE_NAMESPACE_ID_HERE",
+			"simple": {
+				"limit": 100,
+				"period": 60
+			}
+		}
+	]
+}
