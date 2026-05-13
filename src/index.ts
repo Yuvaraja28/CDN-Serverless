@@ -8,7 +8,7 @@
  *  4. Proxy             – forward to upstream, rewrite response headers / body.
  */
 
-import { getRoutes, getCacheTtl } from "./config";
+import { getRoutes } from "./config";
 import { applyRateLimit } from "./middleware/rateLimiter";
 import { checkReferer } from "./middleware/refererCheck";
 import { proxyRequest } from "./handlers/proxy";
@@ -106,7 +106,6 @@ export default {
     // Proxy
     // ------------------------------------------------------------------
 
-    const cacheTtl = getCacheTtl(env);
-    return proxyRequest(request, target, cacheTtl, transformHtml);
+    return proxyRequest(request, target, transformHtml);
   },
 } satisfies ExportedHandler<Env>;

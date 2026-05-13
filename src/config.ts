@@ -36,13 +36,6 @@ export function getRoutes(env: Env): Record<string, RouteConfig> {
   }
 }
 
-/**
- * Gets the Cache TTL from the environment variable or returns the default.
- */
-export function getCacheTtl(env: Env): number {
-  const ttl = parseInt(env.CACHE_TTL || "7200", 10);
-  return isNaN(ttl) ? 7200 : ttl;
-}
 
 /**
  * Response headers from upstream origins that must never be forwarded

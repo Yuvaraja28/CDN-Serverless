@@ -13,15 +13,10 @@ import type { ProxyTarget } from "../types";
  * - Re-runs `transformHtml` on HTML responses so callers can inject content
  *   rewrites (the default no-op keeps the original behaviour).
  *
- * @param request       The original incoming request.
- * @param target        Resolved upstream hostname + pathname.
- * @param cacheTtl      Cache TTL in seconds.
- * @param transformHtml Optional async transformer applied to HTML bodies.
- */
+**/
 export async function proxyRequest(
   request: Request,
   target: ProxyTarget,
-  cacheTtl: number,
   transformHtml: (html: string) => Promise<string> = async (h) => h
 ): Promise<Response> {
   const upstreamUrl = new URL(request.url);
@@ -59,6 +54,7 @@ export async function proxyRequest(
     headers: upstreamHeaders,
     body: request.body,
     redirect: "follow",
+    cache: "no-store", // Bypasses Cloudflare's internal cache for subrequests
   });
 
   const upstreamResponse = await fetch(upstreamRequest);
@@ -79,27 +75,29 @@ export async function proxyRequest(
     const originalText = await upstreamResponse.text();
     const rewrittenText = await transformHtml(originalText);
     const htmlResponse = new Response(rewrittenText, upstreamResponse);
-    return finalizeResponse(htmlResponse, cacheTtl);
+    return finalizeResponse(htmlResponse);
   }
 
   // For non-HTML (PDF, images, etc.), stream the body directly.
-  return finalizeResponse(new Response(upstreamResponse.body, upstreamResponse), cacheTtl);
+  return finalizeResponse(new Response(upstreamResponse.body, upstreamResponse));
 }
 
 /**
  * Applies security headers and cache policies to the finalized response.
  */
-function finalizeResponse(response: Response, cacheTtl: number): Response {
+function finalizeResponse(response: Response): Response {
   // Strip sensitive / infrastructure headers leaked by the upstream.
   for (const header of STRIP_RESPONSE_HEADERS) {
     response.headers.delete(header);
   }
 
-  // Normalise cache policy.
+  // Disable cache policy fully.
   response.headers.set(
     "Cache-Control",
-    `public, max-age=${cacheTtl}, s-maxage=${cacheTtl}, must-revalidate`
+    "no-store, no-cache, must-revalidate, proxy-revalidate"
   );
+  response.headers.set("Pragma", "no-cache");
+  response.headers.set("Expires", "0");
 
   // Security: restrict embedding to same-origin frames.
   response.headers.set("Content-Security-Policy", "frame-ancestors 'self'");
